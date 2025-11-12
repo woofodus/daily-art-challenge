@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Art Challenge Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #581c87 0%, #3730a3 50%, #1e3a8a 100%);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 48rem;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            color: #e9d5ff;
+            font-size: 1.125rem;
+        }
+
+        .options-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .options-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            color: #e9d5ff;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .select-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        select option {
+            background: #1e3a8a;
+            color: white;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .initial-state {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 1.25rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #db2777 0%, #9333ea 100%);
+        }
+
+        .challenge-content {
+            display: none;
+        }
+
+        .challenge-content.active {
+            display: block;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: rgba(168, 85, 247, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .category-text {
+            color: #e9d5ff;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .character-box {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(251, 146, 60, 0.2) 100%);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 2px solid rgba(251, 191, 36, 0.5);
+            margin-bottom: 1.5rem;
+        }
+
+        .underling-box {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(34, 211, 238, 0.2) 100%);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 2px solid rgba(96, 165, 250, 0.5);
+            margin-bottom: 1.5rem;
+        }
+
+        .box-label {
+            color: #d1d5db;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .character-name {
+            font-size: 2.25rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .underling-name {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .challenge-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .spec-box {
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+        }
+
+        .spec-label {
+            color: #c4b5fd;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .spec-value {
+            color: white;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .challenge-description {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .challenge-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .challenge-text {
+            color: #e9d5ff;
+            line-height: 1.625;
+        }
+
+        .highlight-character {
+            color: #fcd34d;
+            font-weight: 600;
+        }
+
+        .highlight-underling {
+            color: #67e8f9;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .regenerate-btn, .share-btn {
+            flex: 1;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .regenerate-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .regenerate-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .share-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .share-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+
+        .tip {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #e9d5ff;
+            font-size: 0.875rem;
+        }
+
+        .center-badge {
+            text-align: center;
+        }
+
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 640px) {
+            .challenge-specs {
+                grid-template-columns: 1fr;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">✨ Daily Art Challenge ✨</h1>
+            <p class="subtitle">Generate your character and underling for today's creative challenge!</p>
+        </div>
+
+        <div class="options-panel">
+            <h2 class="options-title">⚙️ Challenge Options</h2>
+            
+            <div class="filter-group">
+                <label class="filter-label">Categories to Include:</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="greek" checked>
+                        <label for="greek">Greek Mythology</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="norse" checked>
+                        <label for="norse">Norse Mythology</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="fantasy" checked>
+                        <label for="fantasy">Fantasy</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Character Options:</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="includeUnderling" checked>
+                        <label for="includeUnderling">Include Underling/Companion</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Difficulty Level:</label>
+                <div class="select-wrapper">
+                    <select id="difficulty">
+                        <option value="easy">Easy - Simple pose or portrait</option>
+                        <option value="medium" selected>Medium - Action scene or interaction</option>
+                        <option value="hard">Hard - Complex composition with environment</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Art Style Suggestion:</label>
+                <div class="select-wrapper">
+                    <select id="artStyle">
+                        <option value="random" selected>Random (Surprise me!)</option>
+                        <option value="digital">Digital Painting</option>
+                        <option value="watercolor">Watercolor</option>
+                        <option value="ink">Ink Drawing</option>
+                        <option value="pixel">Pixel Art</option>
+                        <option value="sketch">Pencil Sketch</option>
+                        <option value="oil">Oil Painting</option>
+                        <option value="anime">Anime Style</option>
+                        <option value="comic">Comic Book Style</option>
+                        <option value="realistic">Photorealistic</option>
+                        <option value="stylized">Stylized/Cartoon</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div id="initialState" class="initial-state">
+                <button class="generate-btn" onclick="generateChallenge()">
+                    ✨ Generate Today's Challenge
+                </button>
+            </div>
+
+            <div id="challengeContent" class="challenge-content">
+                <div class="center-badge">
+                    <div class="category-badge">
+                        <span class="category-text" id="categoryText"></span>
+                    </div>
+                </div>
+
+                <div class="character-box">
+                    <h2 class="box-label">Main Character</h2>
+                    <p class="character-name" id="characterName"></p>
+                </div>
+
+                <div class="underling-box">
+                    <h2 class="box-label">Underling / Companion</h2>
+                    <p class="underling-name" id="underlingName"></p>
+                </div>
+
+                <div class="challenge-specs">
+                    <div class="spec-box">
+                        <div class="spec-label">Difficulty</div>
+                        <div class="spec-value" id="difficultyDisplay"></div>
+                    </div>
+                    <div class="spec-box">
+                        <div class="spec-label">Art Style</div>
+                        <div class="spec-value" id="styleDisplay"></div>
+                    </div>
+                </div>
+
+                <div class="challenge-description">
+                    <h3 class="challenge-title">Your Challenge:</h3>
+                    <p class="challenge-text" id="challengeText"></p>
+                </div>
+
+                <div class="button-group">
+                    <button class="regenerate-btn" onclick="generateChallenge()">
+                        🔄 Generate New
+                    </button>
+                    <button class="share-btn" onclick="shareChallenge()">
+                        📤 Copy Text
+                    </button>
+                </div>
+                
+                <div class="button-group" style="margin-top: 1rem;">
+                    <button class="share-btn" onclick="copyLink()" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                        🔗 Copy Link
+                    </button>
+                    <button class="share-btn" onclick="downloadImage()" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                        📷 Download Image
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip">
+            <p>💡 Tip: Adjust the options above to customize your challenges!</p>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Challenge copied to clipboard!</div>
+
+    <canvas id="imageCanvas" style="display: none;"></canvas>
+
+    <script>
+        var characters = [
+            { name: "Zeus", category: "Greek Mythology", underling: "Storm Eagle" },
+            { name: "Athena", category: "Greek Mythology", underling: "Owl Companion" },
+            { name: "Hera", category: "Greek Mythology", underling: "Peacock Guardian" },
+            { name: "Poseidon", category: "Greek Mythology", underling: "Sea Serpent" },
+            { name: "Hades", category: "Greek Mythology", underling: "Undead Warrior" },
+            { name: "Ares", category: "Greek Mythology", underling: "War Hound" },
+            { name: "Apollo", category: "Greek Mythology", underling: "Sun Sprite" },
+            { name: "Artemis", category: "Greek Mythology", underling: "Silver Stag" },
+            { name: "Hephaestus", category: "Greek Mythology", underling: "Forge Automaton" },
+            { name: "Aphrodite", category: "Greek Mythology", underling: "Dove Messenger" },
+            { name: "Hermes", category: "Greek Mythology", underling: "Winged Courier" },
+            { name: "Dionysus", category: "Greek Mythology", underling: "Satyr Reveler" },
+            { name: "Demeter", category: "Greek Mythology", underling: "Harvest Spirit" },
+            { name: "Persephone", category: "Greek Mythology", underling: "Pomegranate Imp" },
+            
+            { name: "Odin", category: "Norse Mythology", underling: "Raven Huginn" },
+            { name: "Thor", category: "Norse Mythology", underling: "Storm Valkyrie" },
+            { name: "Loki", category: "Norse Mythology", underling: "Trickster Sprite" },
+            { name: "Freya", category: "Norse Mythology", underling: "Battle Cat" },
+            { name: "Freyr", category: "Norse Mythology", underling: "Golden Boar" },
+            { name: "Heimdall", category: "Norse Mythology", underling: "Horn Bearer" },
+            { name: "Tyr", category: "Norse Mythology", underling: "War Wolf" },
+            { name: "Baldur", category: "Norse Mythology", underling: "Light Spirit" },
+            { name: "Hel", category: "Norse Mythology", underling: "Corpse Servant" },
+            { name: "Fenrir", category: "Norse Mythology", underling: "Wolf Cub" },
+            { name: "Jormungandr", category: "Norse Mythology", underling: "Sea Serpent" },
+            { name: "Skadi", category: "Norse Mythology", underling: "Winter Wolf" },
+            { name: "Vidar", category: "Norse Mythology", underling: "Silent Guardian" },
+            { name: "Njord", category: "Norse Mythology", underling: "Sea Spirit" },
+            { name: "Frigg", category: "Norse Mythology", underling: "Spinning Maiden" },
+            { name: "Bragi", category: "Norse Mythology", underling: "Skald Apprentice" },
+            { name: "Idun", category: "Norse Mythology", underling: "Apple Keeper" },
+            { name: "Valkyrie Captain", category: "Norse Mythology", underling: "Shield Maiden" },
+            { name: "Berserker Chief", category: "Norse Mythology", underling: "Bear Warrior" },
+            { name: "Draugr King", category: "Norse Mythology", underling: "Barrow Wight" },
+            
+            { name: "Paladin", category: "Fantasy", underling: "Squire" },
+            { name: "Knight", category: "Fantasy", underling: "Soldier" },
+            { name: "Archmage", category: "Fantasy", underling: "Apprentice Mage" },
+            { name: "Necromancer", category: "Fantasy", underling: "Skeleton Minion" },
+            { name: "Dragon Lord", category: "Fantasy", underling: "Wyrmling" },
+            { name: "Elven Queen", category: "Fantasy", underling: "Court Archer" },
+            { name: "Dwarven King", category: "Fantasy", underling: "Shield Bearer" },
+            { name: "Barbarian Chieftain", category: "Fantasy", underling: "Tribal Warrior" },
+            { name: "Druid Circle Leader", category: "Fantasy", underling: "Beast Companion" },
+            { name: "Warlock", category: "Fantasy", underling: "Imp Familiar" },
+            { name: "Cleric of Light", category: "Fantasy", underling: "Acolyte" },
+            { name: "Shadow Assassin", category: "Fantasy", underling: "Shadow Scout" },
+            { name: "Pirate Captain", category: "Fantasy", underling: "Deck Hand" },
+            { name: "Vampire Lord", category: "Fantasy", underling: "Thrall" },
+            { name: "Lich King", category: "Fantasy", underling: "Wraith" },
+            { name: "Phoenix Knight", category: "Fantasy", underling: "Flame Spirit" },
+            { name: "Ice Sorceress", category: "Fantasy", underling: "Frost Elemental" },
+            { name: "Ranger Captain", category: "Fantasy", underling: "Scout" },
+            { name: "Monk Master", category: "Fantasy", underling: "Disciple" },
+            { name: "Demon Hunter", category: "Fantasy", underling: "Hell Hound" },
+            { name: "Blood Mage", category: "Fantasy", underling: "Crimson Familiar" },
+            { name: "Storm Herald", category: "Fantasy", underling: "Lightning Wisp" },
+            { name: "Beastmaster", category: "Fantasy", underling: "Dire Wolf" },
+            { name: "Battle Cleric", category: "Fantasy", underling: "War Priest" },
+            { name: "Rogue Guildmaster", category: "Fantasy", underling: "Pickpocket" },
+            { name: "Holy Inquisitor", category: "Fantasy", underling: "Zealot" },
+            { name: "Dark Summoner", category: "Fantasy", underling: "Lesser Demon" },
+            { name: "Chronomancer", category: "Fantasy", underling: "Time Echo" },
+            { name: "Geomancer", category: "Fantasy", underling: "Stone Elemental" },
+            { name: "Pyromancer", category: "Fantasy", underling: "Fire Imp" },
+            { name: "Cryomancer", category: "Fantasy", underling: "Ice Sprite" },
+            { name: "Aeromancer", category: "Fantasy", underling: "Wind Spirit" },
+            { name: "Hydromancer", category: "Fantasy", underling: "Water Elemental" },
+            { name: "Illusionist Archmage", category: "Fantasy", underling: "Mirror Image" },
+            { name: "Bard King", category: "Fantasy", underling: "Minstrel" },
+            { name: "Samurai Master", category: "Fantasy", underling: "Ronin" },
+            { name: "Ninja Clan Leader", category: "Fantasy", underling: "Shadow Blade" },
+            { name: "Gladiator Champion", category: "Fantasy", underling: "Arena Fighter" },
+            { name: "Witch Queen", category: "Fantasy", underling: "Black Cat Familiar" },
+            { name: "Alchemist Supreme", category: "Fantasy", underling: "Potion Apprentice" },
+            { name: "Artificer Master", category: "Fantasy", underling: "Clockwork Servant" },
+            { name: "Beast King", category: "Fantasy", underling: "Alpha Wolf" },
+            { name: "Celestial Guardian", category: "Fantasy", underling: "Angelic Herald" },
+            { name: "Abyssal Knight", category: "Fantasy", underling: "Void Spawn" },
+            { name: "Wild Mage", category: "Fantasy", underling: "Chaos Sprite" },
+            { name: "Runecaster", category: "Fantasy", underling: "Rune Guardian" },
+            { name: "Spirit Shaman", category: "Fantasy", underling: "Ancestral Ghost" },
+            { name: "Plague Doctor", category: "Fantasy", underling: "Plague Rat" },
+            { name: "Crystal Sage", category: "Fantasy", underling: "Crystal Golem" },
+            { name: "Void Walker", category: "Fantasy", underling: "Shadow Hound" }
+        ];
+
+        var artStyles = [
+            "Digital Painting",
+            "Watercolor",
+            "Ink Drawing",
+            "Pixel Art",
+            "Pencil Sketch",
+            "Oil Painting",
+            "Anime Style",
+            "Comic Book Style",
+            "Photorealistic",
+            "Stylized/Cartoon"
+        ];
+
+        var difficultyDescriptions = {
+            easy: "Simple pose or portrait",
+            medium: "Action scene or interaction",
+            hard: "Complex composition with environment"
+        };
+
+        var currentChallenge = null;
+
+        function getFilteredCharacters() {
+            var includeGreek = document.getElementById('greek').checked;
+            var includeNorse = document.getElementById('norse').checked;
+            var includeFantasy = document.getElementById('fantasy').checked;
+
+            return characters.filter(function(char) {
+                if (char.category === 'Greek Mythology') return includeGreek;
+                if (char.category === 'Norse Mythology') return includeNorse;
+                if (char.category === 'Fantasy') return includeFantasy;
+                return false;
+            });
+        }
+
+        function generateChallenge() {
+            var filtered = getFilteredCharacters();
+            
+            if (filtered.length === 0) {
+                alert('Please select at least one category!');
+                return;
+            }
+
+            var randomIndex = Math.floor(Math.random() * filtered.length);
+            var challenge = filtered[randomIndex];
+
+            var artStyleSelect = document.getElementById('artStyle').value;
+            var selectedStyle;
+            if (artStyleSelect === 'random') {
+                selectedStyle = artStyles[Math.floor(Math.random() * artStyles.length)];
+            } else {
+                var styleMap = {
+                    digital: 'Digital Painting',
+                    watercolor: 'Watercolor',
+                    ink: 'Ink Drawing',
+                    pixel: 'Pixel Art',
+                    sketch: 'Pencil Sketch',
+                    oil: 'Oil Painting',
+                    anime: 'Anime Style',
+                    comic: 'Comic Book Style',
+                    realistic: 'Photorealistic',
+                    stylized: 'Stylized/Cartoon'
+                };
+                selectedStyle = styleMap[artStyleSelect];
+            }
+
+            var difficulty = document.getElementById('difficulty').value;
+            var difficultyText = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+
+            currentChallenge = {
+                character: challenge.name,
+                underling: challenge.underling,
+                category: challenge.category,
+                difficulty: difficultyText,
+                style: selectedStyle,
+                difficultyDesc: difficultyDescriptions[difficulty]
+            };
+
+            document.getElementById('categoryText').textContent = challenge.category;
+            document.getElementById('characterName').textContent = challenge.name;
+            document.getElementById('underlingName').textContent = challenge.underling;
+            document.getElementById('difficultyDisplay').textContent = difficultyText;
+            document.getElementById('styleDisplay').textContent = selectedStyle;
+            
+            var promptText = 'Create a <span class="highlight-character">' + selectedStyle + '</span> artwork featuring <span class="highlight-character">' + challenge.name + '</span> alongside their <span class="highlight-underling">' + challenge.underling + '</span>. ';
+            promptText += difficultyDescriptions[difficulty] + '. Consider their relationship, dynamic, and how they interact in your composition!';
+            
+            document.getElementById('challengeText').innerHTML = promptText;
+
+            document.getElementById('initialState').style.display = 'none';
+            document.getElementById('challengeContent').classList.add('active');
+        }
+
+        function shareChallenge() {
+            if (!currentChallenge) return;
+
+            var shareText = '🎨 Daily Art Challenge 🎨\n\n';
+            shareText += '📜 Character: ' + currentChallenge.character + '\n';
+            shareText += '👥 Companion: ' + currentChallenge.underling + '\n';
+            shareText += '📂 Category: ' + currentChallenge.category + '\n';
+            shareText += '⚡ Difficulty: ' + currentChallenge.difficulty + '\n';
+            shareText += '🖌️ Style: ' + currentChallenge.style + '\n\n';
+            shareText += '✨ Challenge: ' + currentChallenge.difficultyDesc;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(shareText).then(function() {
+                    showToast();
+                }).catch(function() {
+                    fallbackCopy(shareText);
+                });
+            } else {
+                fallbackCopy(shareText);
+            }
+        }
+
+        function fallbackCopy(text) {
+            var textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast();
+            } catch (err) {
+                alert('Challenge details:\n\n' + text);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function showToast() {
+            var toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function copyLink() {
+            if (!currentChallenge) return;
+
+            var linkData = btoa(JSON.stringify({
+                char: currentChallenge.character,
+                under: currentChallenge.underling,
+                cat: currentChallenge.category,
+                diff: currentChallenge.difficulty,
+                style: currentChallenge.style
+            }));
+
+            var url = window.location.href.split('?')[0] + '?c=' + linkData;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(function() {
+                    var toast = document.getElementById('toast');
+                    toast.textContent = 'Link copied to clipboard!';
+                    showToast();
+                }).catch(function() {
+                    alert('Challenge link:\n\n' + url);
+                });
+            } else {
+                alert('Challenge link:\n\n' + url);
+            }
+        }
+
+        function downloadImage() {
+            if (!currentChallenge) return;
+
+            var canvas = document.getElementById('imageCanvas');
+            var ctx = canvas.getContext('2d');
+            
+            canvas.width = 1200;
+            canvas.height = 1400;
+
+            var gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#581c87');
+            gradient.addColorStop(0.5, '#3730a3');
+            gradient.addColorStop(1, '#1e3a8a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(50, 50, canvas.width - 100, canvas.height - 100);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 60px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Daily Art Challenge', canvas.width / 2, 150);
+
+            ctx.fillStyle = 'rgba(168, 85, 247, 0.4)';
+            var categoryWidth = ctx.measureText(currentChallenge.category).width + 100;
+            ctx.fillRect((canvas.width - categoryWidth) / 2, 220, categoryWidth, 60);
+            ctx.fillStyle = '#e9d5ff';
+            ctx.font = '24px sans-serif';
+            ctx.fillText(currentChallenge.category, canvas.width / 2, 258);
+
+            ctx.fillStyle = 'rgba(251, 191, 36, 0.3)';
+            ctx.fillRect(100, 320, canvas.width - 200, 180);
+            ctx.strokeStyle = 'rgba(251, 191, 36, 0.6)';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(100, 320, canvas.width - 200, 180);
+            ctx.fillStyle = '#d1d5db';
+            ctx.font = '20px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('MAIN CHARACTER', 120, 360);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 50px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(currentChallenge.character, canvas.width / 2, 430);
+
+            ctx.fillStyle = 'rgba(96, 165, 250, 0.3)';
+            ctx.fillRect(100, 540, canvas.width - 200, 180);
+            ctx.strokeStyle = 'rgba(96, 165, 250, 0.6)';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(100, 540, canvas.width - 200, 180);
+            ctx.fillStyle = '#d1d5db';
+            ctx.font = '20px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('UNDERLING / COMPANION', 120, 580);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 45px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(currentChallenge.underling, canvas.width / 2, 650);
+
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.3)';
+            ctx.fillRect(100, 760, 480, 120);
+            ctx.strokeStyle = 'rgba(139, 92, 246, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(100, 760, 480, 120);
+            ctx.fillStyle = '#c4b5fd';
+            ctx.font = '18px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('DIFFICULTY', 120, 795);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 32px sans-serif';
+            ctx.fillText(currentChallenge.difficulty, 120, 845);
+
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.3)';
+            ctx.fillRect(620, 760, 480, 120);
+            ctx.strokeStyle = 'rgba(139, 92, 246, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(620, 760, 480, 120);
+            ctx.fillStyle = '#c4b5fd';
+            ctx.font = '18px sans-serif';
+            ctx.fillText('ART STYLE', 640, 795);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 32px sans-serif';
+            ctx.fillText(currentChallenge.style, 640, 845);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(100, 920, canvas.width - 200, 360);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(100, 920, canvas.width - 200, 360);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 28px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('Your Challenge:', 120, 970);
+            
+            ctx.fillStyle = '#e9d5ff';
+            ctx.font = '24px sans-serif';
+            
+            var line1 = 'Create a ' + currentChallenge.style + ' artwork';
+            var line2 = 'featuring ' + currentChallenge.character;
+            var line3 = 'alongside their ' + currentChallenge.underling + '.';
+            var line4 = currentChallenge.difficultyDesc + '.';
+            var line5 = 'Consider their relationship and';
+            var line6 = 'how they interact!';
+            
+            ctx.fillText(line1, 120, 1025);
+            ctx.fillText(line2, 120, 1065);
+            ctx.fillText(line3, 120, 1105);
+            ctx.fillText(line4, 120, 1145);
+            ctx.fillText(line5, 120, 1185);
+            ctx.fillText(line6, 120, 1225);
+
+            try {
+                var dataURL = canvas.toDataURL('image/png');
+                var a = document.createElement('a');
+                a.href = dataURL;
+                a.download = 'art-challenge-' + currentChallenge.character.toLowerCase().replace(/\s+/g, '-') + '.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                var toast = document.getElementById('toast');
+                toast.textContent = 'Image downloaded!';
+                showToast();
+            } catch (error) {
+                alert('Image download failed. Please try again.');
+                console.error('Download error:', error);
+            }
+        }
+
+        function loadFromURL() {
+            var params = new URLSearchParams(window.location.search);
+            if (params.has('c')) {
+                try {
+                    var data = JSON.parse(atob(params.get('c')));
+                    var diffLower = data.diff.toLowerCase();
+                    
+                    currentChallenge = {
+                        character: data.char,
+                        underling: data.under,
+                        category: data.cat,
+                        difficulty: data.diff,
+                        style: data.style,
+                        difficultyDesc: difficultyDescriptions[diffLower] || difficultyDescriptions.medium
+                    };
+
+                    document.getElementById('categoryText').textContent = currentChallenge.category;
+                    document.getElementById('characterName').textContent = currentChallenge.character;
+                    document.getElementById('underlingName').textContent = currentChallenge.underling;
+                    document.getElementById('difficultyDisplay').textContent = currentChallenge.difficulty;
+                    document.getElementById('styleDisplay').textContent = currentChallenge.style;
+                    
+                    var promptText = 'Create a <span class="highlight-character">' + currentChallenge.style + '</span> artwork featuring <span class="highlight-character">' + currentChallenge.character + '</span> alongside their <span class="highlight-underling">' + currentChallenge.underling + '</span>. ';
+                    promptText += currentChallenge.difficultyDesc + '. Consider their relationship, dynamic, and how they interact in your composition!';
+                    
+                    document.getElementById('challengeText').innerHTML = promptText;
+
+                    document.getElementById('initialState').style.display = 'none';
+                    document.getElementById('challengeContent').classList.add('active');
+                } catch (e) {
+                    console.error('Error loading challenge from URL');
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            loadFromURL();
+        });
+    </script>
+</body>
+</html>
