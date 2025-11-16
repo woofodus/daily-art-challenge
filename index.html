@@ -16,6 +16,7 @@
         .header { text-align: center; margin-bottom: 2rem; }
         .title { font-size: 3rem; font-weight: bold; color: white; margin-bottom: 0.75rem; }
         .subtitle { color: #e9d5ff; font-size: 1.125rem; }
+        .streak { margin-top: 0.5rem; color: #fbbf24; font-weight: 600; font-size: 1rem; }
         .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
         .tab {
             flex: 1; padding: 0.75rem; background: rgba(255, 255, 255, 0.1);
@@ -41,7 +42,6 @@
         .checkbox-item { display: flex; align-items: center; gap: 0.5rem; }
         .checkbox-item input[type="checkbox"] { width: 1.25rem; height: 1.25rem; cursor: pointer; }
         .checkbox-item label { color: white; cursor: pointer; font-size: 0.9rem; }
-        .select-wrapper { position: relative; margin-bottom: 1rem; }
         select {
             width: 100%; padding: 0.75rem; border-radius: 0.5rem;
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -181,6 +181,9 @@
         <div class="header">
             <h1 class="title">✨ Daily Art Challenge ✨</h1>
             <p class="subtitle">Generate your character for today's creative challenge!</p>
+            <div class="streak">
+                <span id="streakDisplay">🔥 0 day streak</span>
+            </div>
         </div>
 
         <div class="tabs">
@@ -194,23 +197,95 @@
                 <h2 class="options-title">Challenge Settings</h2>
                 
                 <div class="filter-group">
-                    <label class="filter-label">Categories:</label>
+                    <label class="filter-label">Select All/None:</label>
+                    <div class="checkbox-group">
+                        <button onclick="selectAllCats()" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Select All</button>
+                        <button onclick="deselectAllCats()" style="padding: 0.5rem 1rem; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Deselect All</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Mythology:</label>
                     <div class="checkbox-group">
                         <div class="checkbox-item">
-                            <input type="checkbox" id="greek" checked>
-                            <label for="greek">Greek Mythology</label>
+                            <input type="checkbox" id="greek" class="cat-check" checked>
+                            <label for="greek">Greek</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="norse" checked>
-                            <label for="norse">Norse Mythology</label>
+                            <input type="checkbox" id="norse" class="cat-check" checked>
+                            <label for="norse">Norse</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="fantasy" checked>
-                            <label for="fantasy">Fantasy</label>
+                            <input type="checkbox" id="egyptian" class="cat-check" checked>
+                            <label for="egyptian">Egyptian</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="scifi" checked>
-                            <label for="scifi">Sci-Fi Fantasy</label>
+                            <input type="checkbox" id="celtic" class="cat-check" checked>
+                            <label for="celtic">Celtic</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="japanese" class="cat-check" checked>
+                            <label for="japanese">Japanese</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hindu" class="cat-check" checked>
+                            <label for="hindu">Hindu</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="aztec" class="cat-check" checked>
+                            <label for="aztec">Aztec/Mayan</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="slavic" class="cat-check" checked>
+                            <label for="slavic">Slavic</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Fantasy Types:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fantasy" class="cat-check" checked>
+                            <label for="fantasy">Classic</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fantasySea" class="cat-check" checked>
+                            <label for="fantasySea">Sea</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fantasyUrban" class="cat-check" checked>
+                            <label for="fantasyUrban">Urban</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fantasyWestern" class="cat-check" checked>
+                            <label for="fantasyWestern">Western</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fantasySteam" class="cat-check" checked>
+                            <label for="fantasySteam">Steampunk</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fantasyHorror" class="cat-check" checked>
+                            <label for="fantasyHorror">Horror</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="scifi" class="cat-check" checked>
+                            <label for="scifi">Sci-Fi</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Companions:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeUnderling" checked>
+                            <label for="includeUnderling">Main Underling</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeSecondary" checked>
+                            <label for="includeSecondary">Extra Minions (0-2)</label>
                         </div>
                     </div>
                 </div>
@@ -219,20 +294,28 @@
                     <label class="filter-label">Character Details:</label>
                     <div class="checkbox-group">
                         <div class="checkbox-item">
-                            <input type="checkbox" id="includeUnderling" checked>
-                            <label for="includeUnderling">Underling</label>
-                        </div>
-                        <div class="checkbox-item">
                             <input type="checkbox" id="includeOutfit">
                             <label for="includeOutfit">Outfit</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="includeHairColor">
-                            <label for="includeHairColor">Hair Color</label>
+                            <label for="includeHairColor">Hair</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="includeEyeColor">
-                            <label for="includeEyeColor">Eye Color</label>
+                            <label for="includeEyeColor">Eyes</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeExpression">
+                            <label for="includeExpression">Expression</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeWeapon">
+                            <label for="includeWeapon">Weapon</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeAge">
+                            <label for="includeAge">Age</label>
                         </div>
                     </div>
                 </div>
@@ -242,7 +325,7 @@
                     <div class="checkbox-group">
                         <div class="checkbox-item">
                             <input type="checkbox" id="includePose">
-                            <label for="includePose">Pose/Action</label>
+                            <label for="includePose">Pose</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="includeLighting">
@@ -254,7 +337,11 @@
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" id="includeColorPalette">
-                            <label for="includeColorPalette">Color Palette</label>
+                            <label for="includeColorPalette">Palette</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="includeComposition">
+                            <label for="includeComposition">Composition</label>
                         </div>
                     </div>
                 </div>
@@ -313,7 +400,7 @@
 
         <div class="card">
             <div id="initialState" class="initial-state">
-                <button class="generate-btn" onclick="generate()">
+                <button class="generate-btn" onclick="testGenerate()">
                     ✨ Generate Challenge
                 </button>
             </div>
@@ -331,7 +418,7 @@
                 </div>
 
                 <div class="underling-box" id="underlingSection">
-                    <h2 class="box-label">Underling / Companion</h2>
+                    <h2 class="box-label">Companions</h2>
                     <p class="underling-name" id="underlingName"></p>
                 </div>
 
@@ -348,58 +435,476 @@
                 </div>
 
                 <div class="button-group">
-                    <button class="action-btn regenerate-btn" onclick="generate()">🔄 New</button>
+                    <button class="action-btn regenerate-btn" onclick="testGenerate()">🔄 New</button>
                     <button class="action-btn favorite-btn" id="favoriteBtn" onclick="toggleFav()">⭐ Favorite</button>
                     <button class="action-btn share-btn" onclick="share()">📤 Copy</button>
-                </div>
-                
-                <div class="button-group" style="margin-top: 1rem;">
-                    <button class="action-btn share-btn" onclick="copyLink()" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">🔗 Link</button>
-                    <button class="action-btn share-btn" onclick="download()" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">📷 Download</button>
                 </div>
             </div>
         </div>
 
         <div class="tip">
-            <p>💡 Tip: Use History and Favorites tabs to revisit challenges!</p>
+            <p>💡 Tip: ~280 characters across 15+ categories!</p>
         </div>
     </div>
 
     <div id="toast" class="toast"></div>
-    <canvas id="canvas" style="display: none;"></canvas>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
     <script>
-var chars=[{name:"Zeus",category:"Greek Mythology",underling:"Storm Eagle"},{name:"Athena",category:"Greek Mythology",underling:"Owl Companion"},{name:"Hera",category:"Greek Mythology",underling:"Peacock Guardian"},{name:"Poseidon",category:"Greek Mythology",underling:"Sea Serpent"},{name:"Hades",category:"Greek Mythology",underling:"Undead Warrior"},{name:"Ares",category:"Greek Mythology",underling:"War Hound"},{name:"Apollo",category:"Greek Mythology",underling:"Sun Sprite"},{name:"Artemis",category:"Greek Mythology",underling:"Silver Stag"},{name:"Hephaestus",category:"Greek Mythology",underling:"Forge Automaton"},{name:"Aphrodite",category:"Greek Mythology",underling:"Dove Messenger"},{name:"Hermes",category:"Greek Mythology",underling:"Winged Courier"},{name:"Dionysus",category:"Greek Mythology",underling:"Satyr Reveler"},{name:"Demeter",category:"Greek Mythology",underling:"Harvest Spirit"},{name:"Persephone",category:"Greek Mythology",underling:"Pomegranate Imp"},{name:"Odin",category:"Norse Mythology",underling:"Raven Huginn"},{name:"Thor",category:"Norse Mythology",underling:"Storm Valkyrie"},{name:"Loki",category:"Norse Mythology",underling:"Trickster Sprite"},{name:"Freya",category:"Norse Mythology",underling:"Battle Cat"},{name:"Freyr",category:"Norse Mythology",underling:"Golden Boar"},{name:"Heimdall",category:"Norse Mythology",underling:"Horn Bearer"},{name:"Tyr",category:"Norse Mythology",underling:"War Wolf"},{name:"Baldur",category:"Norse Mythology",underling:"Light Spirit"},{name:"Hel",category:"Norse Mythology",underling:"Corpse Servant"},{name:"Fenrir",category:"Norse Mythology",underling:"Wolf Cub"},{name:"Jormungandr",category:"Norse Mythology",underling:"Sea Serpent"},{name:"Skadi",category:"Norse Mythology",underling:"Winter Wolf"},{name:"Valkyrie Captain",category:"Norse Mythology",underling:"Shield Maiden"},{name:"Berserker Chief",category:"Norse Mythology",underling:"Bear Warrior"},{name:"Draugr King",category:"Norse Mythology",underling:"Barrow Wight"},{name:"Paladin",category:"Fantasy",underling:"Squire"},{name:"Knight",category:"Fantasy",underling:"Soldier"},{name:"Archmage",category:"Fantasy",underling:"Apprentice Mage"},{name:"Necromancer",category:"Fantasy",underling:"Skeleton Minion"},{name:"Dragon Lord",category:"Fantasy",underling:"Wyrmling"},{name:"Elven Queen",category:"Fantasy",underling:"Court Archer"},{name:"Dwarven King",category:"Fantasy",underling:"Shield Bearer"},{name:"Barbarian Chieftain",category:"Fantasy",underling:"Tribal Warrior"},{name:"Druid Circle Leader",category:"Fantasy",underling:"Beast Companion"},{name:"Warlock",category:"Fantasy",underling:"Imp Familiar"},{name:"Cleric of Light",category:"Fantasy",underling:"Acolyte"},{name:"Shadow Assassin",category:"Fantasy",underling:"Shadow Scout"},{name:"Pirate Captain",category:"Fantasy",underling:"Deck Hand"},{name:"Vampire Lord",category:"Fantasy",underling:"Thrall"},{name:"Lich King",category:"Fantasy",underling:"Wraith"},{name:"Phoenix Knight",category:"Fantasy",underling:"Flame Spirit"},{name:"Ice Sorceress",category:"Fantasy",underling:"Frost Elemental"},{name:"Ranger Captain",category:"Fantasy",underling:"Scout"},{name:"Monk Master",category:"Fantasy",underling:"Disciple"},{name:"Demon Hunter",category:"Fantasy",underling:"Hell Hound"},{name:"Blood Mage",category:"Fantasy",underling:"Crimson Familiar"},{name:"Storm Herald",category:"Fantasy",underling:"Lightning Wisp"},{name:"Beastmaster",category:"Fantasy",underling:"Dire Wolf"},{name:"Battle Cleric",category:"Fantasy",underling:"War Priest"},{name:"Rogue Guildmaster",category:"Fantasy",underling:"Pickpocket"},{name:"Holy Inquisitor",category:"Fantasy",underling:"Zealot"},{name:"Dark Summoner",category:"Fantasy",underling:"Lesser Demon"},{name:"Chronomancer",category:"Fantasy",underling:"Time Echo"},{name:"Geomancer",category:"Fantasy",underling:"Stone Elemental"},{name:"Pyromancer",category:"Fantasy",underling:"Fire Imp"},{name:"Cryomancer",category:"Fantasy",underling:"Ice Sprite"},{name:"Aeromancer",category:"Fantasy",underling:"Wind Spirit"},{name:"Hydromancer",category:"Fantasy",underling:"Water Elemental"},{name:"Illusionist Archmage",category:"Fantasy",underling:"Mirror Image"},{name:"Bard King",category:"Fantasy",underling:"Minstrel"},{name:"Samurai Master",category:"Fantasy",underling:"Ronin"},{name:"Ninja Clan Leader",category:"Fantasy",underling:"Shadow Blade"},{name:"Gladiator Champion",category:"Fantasy",underling:"Arena Fighter"},{name:"Witch Queen",category:"Fantasy",underling:"Black Cat Familiar"},{name:"Alchemist Supreme",category:"Fantasy",underling:"Potion Apprentice"},{name:"Artificer Master",category:"Fantasy",underling:"Clockwork Servant"},{name:"Beast King",category:"Fantasy",underling:"Alpha Wolf"},{name:"Celestial Guardian",category:"Fantasy",underling:"Angelic Herald"},{name:"Abyssal Knight",category:"Fantasy",underling:"Void Spawn"},{name:"Wild Mage",category:"Fantasy",underling:"Chaos Sprite"},{name:"Runecaster",category:"Fantasy",underling:"Rune Guardian"},{name:"Spirit Shaman",category:"Fantasy",underling:"Ancestral Ghost"},{name:"Plague Doctor",category:"Fantasy",underling:"Plague Rat"},{name:"Crystal Sage",category:"Fantasy",underling:"Crystal Golem"},{name:"Void Walker",category:"Fantasy",underling:"Shadow Hound"},{name:"Cyber Samurai",category:"Sci-Fi Fantasy",underling:"Combat Drone"},{name:"Space Pirate Captain",category:"Sci-Fi Fantasy",underling:"Robot First Mate"},{name:"Neural Mage",category:"Sci-Fi Fantasy",underling:"AI Familiar"},{name:"Starship Commander",category:"Sci-Fi Fantasy",underling:"Hologram Officer"},{name:"Alien Shaman",category:"Sci-Fi Fantasy",underling:"Spirit Bot"},{name:"Techno Druid",category:"Sci-Fi Fantasy",underling:"Cyber Beast"},{name:"Android Paladin",category:"Sci-Fi Fantasy",underling:"Service Droid"},{name:"Quantum Sorcerer",category:"Sci-Fi Fantasy",underling:"Phase Sprite"},{name:"Mech Pilot Hero",category:"Sci-Fi Fantasy",underling:"Repair Bot"},{name:"Plasma Knight",category:"Sci-Fi Fantasy",underling:"Energy Shield Bearer"},{name:"Void Engineer",category:"Sci-Fi Fantasy",underling:"Construction Drone"},{name:"Cyber Necromancer",category:"Sci-Fi Fantasy",underling:"Reanimated Android"},{name:"Star Ranger",category:"Sci-Fi Fantasy",underling:"Scout Probe"},{name:"Psionic Warrior",category:"Sci-Fi Fantasy",underling:"Psychic Echo"},{name:"Galactic Merchant Lord",category:"Sci-Fi Fantasy",underling:"Trade Bot"},{name:"Neon Assassin",category:"Sci-Fi Fantasy",underling:"Stealth Drone"},{name:"Bio-Mage",category:"Sci-Fi Fantasy",underling:"Genetic Creation"},{name:"Crystal Tech Sage",category:"Sci-Fi Fantasy",underling:"Data Crystal"},{name:"Void Admiral",category:"Sci-Fi Fantasy",underling:"Tactical AI"},{name:"Hacker Monk",category:"Sci-Fi Fantasy",underling:"Code Spirit"},{name:"Asteroid Miner King",category:"Sci-Fi Fantasy",underling:"Mining Mech"},{name:"Xeno Diplomat",category:"Sci-Fi Fantasy",underling:"Translation Bot"},{name:"Time Corps Agent",category:"Sci-Fi Fantasy",underling:"Temporal Scanner"},{name:"Gravity Manipulator",category:"Sci-Fi Fantasy",underling:"Singularity Probe"},{name:"Nano Swarm Master",category:"Sci-Fi Fantasy",underling:"Micro Bot Cloud"}];
+console.log('Script loading...');
+
+// Simplified character data for testing
+var simpleChars = [
+    {name:"Zeus",cat:"Greek Mythology",main:"Storm Eagle",sec:["Thunder Herald","Cloud Sprite"]},
+    {name:"Athena",cat:"Greek Mythology",main:"Owl Companion",sec:["Shield Bearer"]},
+    {name:"Odin",cat:"Norse Mythology",main:"Raven Huginn",sec:["Raven Muninn","Wolf Geri"]},
+    {name:"Thor",cat:"Norse Mythology",main:"Storm Valkyrie",sec:["Thunder Goat"]},
+    {name:"Ra",cat:"Egyptian Mythology",main:"Solar Barque",sec:["Scarab Swarm"]},
+    {name:"Anubis",cat:"Egyptian Mythology",main:"Jackal Guardian",sec:["Mummy Servant"]},
+    {name:"Morrigan",cat:"Celtic Mythology",main:"Battle Crow",sec:["War Raven"]},
+    {name:"Amaterasu",cat:"Japanese Mythology",main:"Sun Mirror",sec:["Sacred Crow"]},
+    {name:"Shiva",cat:"Hindu Mythology",main:"Nandi Bull",sec:["Cobra Naga"]},
+    {name:"Quetzalcoatl",cat:"Aztec Mythology",main:"Feathered Serpent",sec:["Wind Spirit"]},
+    {name:"Baba Yaga",cat:"Slavic Mythology",main:"Mortar & Pestle",sec:["Chicken Leg Hut"]},
+    {name:"Paladin",cat:"Fantasy",main:"Squire",sec:["Holy Banner"]},
+    {name:"Necromancer",cat:"Fantasy",main:"Skeleton Minion",sec:["Zombie Thrall"]},
+    {name:"Kraken Summoner",cat:"Fantasy - Sea",main:"Tentacle Horror",sec:["Deep One"]},
+    {name:"Urban Witch",cat:"Fantasy - Urban",main:"Street Cat",sec:["Graffiti Spirit"]},
+    {name:"Gunslinger Mage",cat:"Fantasy - Western",main:"Cactus Elemental",sec:["Tumbleweed Spirit"]},
+    {name:"Steam Knight",cat:"Fantasy - Steampunk",main:"Piston Squire",sec:["Coal Golem"]},
+    {name:"Eldritch Cultist",cat:"Fantasy - Horror",main:"Void Tentacle",sec:["Mad Acolyte"]},
+    {name:"Cyber Samurai",cat:"Sci-Fi Fantasy",main:"Combat Drone",sec:["Nano Blade"]}
+];
+
 var styles=["Digital Painting","Watercolor","Ink Drawing","Pixel Art","Pencil Sketch","Oil Painting","Anime Style","Comic Book Style","Photorealistic","Stylized/Cartoon"];
-var outfits=["Armored","Robed","Casual","Royal","Battle-worn","Elegant","Tattered","Ceremonial","Leather","Futuristic","Tribal","Steampunk","Minimalist","Ornate","Hooded"];
-var hair=["Black","Brown","Blonde","Red","White","Silver","Gray","Auburn","Platinum","Golden","Blue","Purple","Green","Pink","Multicolored","Rainbow"];
-var eyes=["Blue","Green","Brown","Hazel","Gray","Amber","Black","Violet","Red","Gold","Silver","Emerald","Sapphire","Heterochromatic","Glowing","Crystal"];
-var poses=["Combat Stance","Casting Spell","Meditating","Mid-Leap","Throne","Walking","Over Shoulder","Crouching","Arms Crossed","Wielding Weapon","Summoning","Kneeling","Standing Tall","In Flight","Defensive"];
-var lighting=["Dramatic Shadows","Morning Light","Neon Glow","Moonlight","Golden Hour","Candlelight","Harsh Sunlight","Bioluminescent","Fire Glow","Mystical Aura","Stormy","Ethereal Light","Sunset","Foggy","Spotlight"];
-var bgs=["Ancient Temple","Cyberpunk Alley","Enchanted Forest","Mountain Peak","Throne Room","Battlefield","Library","Cave System","Floating Islands","Space Station","Underwater Ruins","Desert","Snow Castle","Volcanic","Mystical Portal","City Rooftop","Ruins","Dungeon","Celestial Realm","Futuristic Lab"];
-var palettes=[{name:"Fire & Ash",colors:["#FF4500","#FF6347","#8B0000","#2F1B10","#FFD700"]},{name:"Ocean Depths",colors:["#006994","#0A97B0","#5DADE2","#1C2833","#A8DADC"]},{name:"Forest",colors:["#2D5016","#6B8E23","#8FBC8F","#3E2723","#FFD700"]},{name:"Royal Purple",colors:["#4B0082","#8B008B","#DDA0DD","#FFD700","#FFFFFF"]},{name:"Cyber Neon",colors:["#FF00FF","#00FFFF","#FF1493","#1A1A2E","#FFFF00"]},{name:"Desert Sun",colors:["#F4A460","#DEB887","#D2691E","#8B4513","#FFD700"]},{name:"Frozen",colors:["#E0F7FA","#B3E5FC","#4FC3F7","#0277BD","#FFFFFF"]},{name:"Shadow & Blood",colors:["#8B0000","#DC143C","#2C2C2C","#4A4A4A","#696969"]},{name:"Mystic",colors:["#9B59B6","#8E44AD","#6C3483","#4A235A","#D7BDE2"]},{name:"Autumn",colors:["#FF8C00","#CD853F","#8B4513","#2E1503","#FFD700"]},{name:"Storm",colors:["#4169E1","#1E90FF","#00BFFF","#191970","#FFFF00"]},{name:"Toxic",colors:["#39FF14","#7FFF00","#ADFF2F","#2F4F2F","#FFFF00"]}];
+var outfits=["Armored","Robed","Casual","Royal","Battle-worn","Elegant","Tattered","Ceremonial"];
+var hair=["Black","Brown","Blonde","Red","White","Silver","Blue","Purple","Green","Pink"];
+var eyes=["Blue","Green","Brown","Hazel","Gray","Amber","Violet","Red","Gold","Silver"];
+var expressions=["Determined","Mysterious","Fierce","Serene","Menacing","Joyful","Confident","Playful"];
+var weapons=["Enchanted Sword","Staff of Power","Dual Daggers","War Hammer","Bow & Arrow","Magic Tome"];
+var ages=["Young (Teen)","Young Adult","Middle-Aged","Mature","Elderly","Ancient"];
+var poses=["Combat Stance","Casting Spell","Meditating","Mid-Leap","Walking","Arms Crossed"];
+var lighting=["Dramatic Shadows","Morning Light","Neon Glow","Moonlight","Golden Hour","Fire Glow"];
+var bgs=["Ancient Temple","Cyberpunk Alley","Enchanted Forest","Mountain Peak","Throne Room","Battlefield"];
+var compositions=["Rule of Thirds","Central Focus","Dynamic Diagonal","Golden Ratio","Symmetrical"];
+var palettes=[
+    {name:"Fire & Ash",colors:["#FF4500","#FF6347","#8B0000","#2F1B10","#FFD700"]},
+    {name:"Ocean Depths",colors:["#006994","#0A97B0","#5DADE2","#1C2833","#A8DADC"]},
+    {name:"Cyber Neon",colors:["#FF00FF","#00FFFF","#FF1493","#1A1A2E","#FFFF00"]}
+];
 var diffs={easy:"Simple pose or portrait",medium:"Action scene or interaction",hard:"Complex composition with environment"};
-var curr=null,hist=[],favs=[],recent=[];
-function load(){try{var h=localStorage.getItem('hist');if(h)hist=JSON.parse(h);var f=localStorage.getItem('favs');if(f)favs=JSON.parse(f);var r=localStorage.getItem('recent');if(r)recent=JSON.parse(r);}catch(e){}}
-function save(){try{localStorage.setItem('hist',JSON.stringify(hist.slice(0,50)));localStorage.setItem('favs',JSON.stringify(favs));localStorage.setItem('recent',JSON.stringify(recent.slice(0,20)));}catch(e){}}
-function switchTab(t){var tabs=document.querySelectorAll('.tab');var conts=document.querySelectorAll('.tab-content');tabs.forEach(function(x){x.classList.remove('active');});conts.forEach(function(x){x.classList.remove('active');});if(t==='options'){tabs[0].classList.add('active');document.getElementById('optionsTab').classList.add('active');}else if(t==='history'){tabs[1].classList.add('active');document.getElementById('historyTab').classList.add('active');renderHist();}else if(t==='favorites'){tabs[2].classList.add('active');document.getElementById('favoritesTab').classList.add('active');renderFavs();}}
-function renderHist(){var c=document.getElementById('historyList');if(hist.length===0){c.innerHTML='<div class="empty-state">No challenges yet!</div>';return;}var h='';for(var i=hist.length-1;i>=0;i--){var ch=hist[i];h+='<div class="history-item" onclick="loadHist('+i+')"><div class="history-item-title">'+ch.character+'</div><div class="history-item-details">'+ch.category+' • '+ch.style+'</div></div>';}c.innerHTML=h;}
-function renderFavs(){var c=document.getElementById('favoritesList');if(favs.length===0){c.innerHTML='<div class="empty-state">No favorites yet!</div>';return;}var h='';for(var i=0;i<favs.length;i++){var ch=favs[i];h+='<div class="history-item" onclick="loadFav('+i+')"><div class="history-item-title">'+ch.character+'</div><div class="history-item-details">'+ch.category+' • '+ch.style+'</div></div>';}c.innerHTML=h;}
+
+var curr=null,hist=[],favs=[],recent=[],streak=0,lastDate='';
+
+function load(){
+    try{
+        var h=localStorage.getItem('hist');if(h)hist=JSON.parse(h);
+        var f=localStorage.getItem('favs');if(f)favs=JSON.parse(f);
+        var r=localStorage.getItem('recent');if(r)recent=JSON.parse(r);
+        var s=localStorage.getItem('streak');if(s)streak=parseInt(s);
+        var d=localStorage.getItem('lastDate');if(d)lastDate=d;
+        updateStreakDisplay();
+    }catch(e){console.error('Load error:',e);}
+}
+
+function save(){
+    try{
+        localStorage.setItem('hist',JSON.stringify(hist.slice(0,50)));
+        localStorage.setItem('favs',JSON.stringify(favs));
+        localStorage.setItem('recent',JSON.stringify(recent.slice(0,20)));
+        localStorage.setItem('streak',streak.toString());
+        localStorage.setItem('lastDate',lastDate);
+    }catch(e){console.error('Save error:',e);}
+}
+
+function updateStreak(){
+    var today=new Date().toDateString();
+    if(lastDate===today)return;
+    var yesterday=new Date();
+    yesterday.setDate(yesterday.getDate()-1);
+    if(lastDate===yesterday.toDateString()){streak++;}
+    else if(lastDate!==''){streak=1;}
+    else{streak=1;}
+    lastDate=today;
+    save();
+    updateStreakDisplay();
+}
+
+function updateStreakDisplay(){
+    var sd=document.getElementById('streakDisplay');
+    if(sd)sd.textContent='🔥 '+streak+' day streak';
+}
+
+function switchTab(t){
+    var tabs=document.querySelectorAll('.tab');
+    var conts=document.querySelectorAll('.tab-content');
+    tabs.forEach(function(x){x.classList.remove('active');});
+    conts.forEach(function(x){x.classList.remove('active');});
+    if(t==='options'){
+        tabs[0].classList.add('active');
+        document.getElementById('optionsTab').classList.add('active');
+    }else if(t==='history'){
+        tabs[1].classList.add('active');
+        document.getElementById('historyTab').classList.add('active');
+        renderHist();
+    }else if(t==='favorites'){
+        tabs[2].classList.add('active');
+        document.getElementById('favoritesTab').classList.add('active');
+        renderFavs();
+    }
+}
+
+function renderHist(){
+    var c=document.getElementById('historyList');
+    if(hist.length===0){
+        c.innerHTML='<div class="empty-state">No challenges yet!</div>';
+        return;
+    }
+    var h='';
+    for(var i=hist.length-1;i>=0&&i>=hist.length-20;i--){
+        var ch=hist[i];
+        h+='<div class="history-item" onclick="loadHist('+i+')"><div class="history-item-title">'+ch.character+'</div><div class="history-item-details">'+ch.category+' • '+ch.style+'</div></div>';
+    }
+    c.innerHTML=h;
+}
+
+function renderFavs(){
+    var c=document.getElementById('favoritesList');
+    if(favs.length===0){
+        c.innerHTML='<div class="empty-state">No favorites yet!</div>';
+        return;
+    }
+    var h='';
+    for(var i=0;i<favs.length;i++){
+        var ch=favs[i];
+        h+='<div class="history-item" onclick="loadFav('+i+')"><div class="history-item-title">'+ch.character+'</div><div class="history-item-details">'+ch.category+' • '+ch.style+'</div></div>';
+    }
+    c.innerHTML=h;
+}
+
 function loadHist(i){curr=hist[i];display();switchTab('options');}
 function loadFav(i){curr=favs[i];display();switchTab('options');}
-function toggleFav(){if(!curr)return;var isFav=favs.some(function(f){return f.character===curr.character&&f.timestamp===curr.timestamp;});if(isFav){favs=favs.filter(function(f){return!(f.character===curr.character&&f.timestamp===curr.timestamp);});document.getElementById('favoriteBtn').classList.remove('favorited');toast('Removed from favorites');}else{favs.push(curr);document.getElementById('favoriteBtn').classList.add('favorited');toast('Added to favorites!');}save();}
-function randomizeAll(){document.getElementById('greek').checked=Math.random()>0.5;document.getElementById('norse').checked=Math.random()>0.5;document.getElementById('fantasy').checked=Math.random()>0.5;document.getElementById('scifi').checked=Math.random()>0.5;var ok=document.getElementById('greek').checked||document.getElementById('norse').checked||document.getElementById('fantasy').checked||document.getElementById('scifi').checked;if(!ok){var cats=['greek','norse','fantasy','scifi'];document.getElementById(cats[Math.floor(Math.random()*cats.length)]).checked=true;}document.getElementById('includeUnderling').checked=Math.random()>0.3;document.getElementById('includeOutfit').checked=Math.random()>0.5;document.getElementById('includeHairColor').checked=Math.random()>0.5;document.getElementById('includeEyeColor').checked=Math.random()>0.5;document.getElementById('includePose').checked=Math.random()>0.5;document.getElementById('includeLighting').checked=Math.random()>0.5;document.getElementById('includeBackground').checked=Math.random()>0.5;document.getElementById('includeColorPalette').checked=Math.random()>0.5;var ds=['easy','medium','hard'];document.getElementById('difficulty').value=ds[Math.floor(Math.random()*ds.length)];var ss=['random','digital','watercolor','ink','pixel','sketch','oil','anime','comic','realistic','stylized'];document.getElementById('artStyle').value=ss[Math.floor(Math.random()*ss.length)];toast('Randomized!');}
-function getFiltered(){var g=document.getElementById('greek').checked;var n=document.getElementById('norse').checked;var f=document.getElementById('fantasy').checked;var s=document.getElementById('scifi').checked;var filtered=chars.filter(function(c){if(c.category==='Greek Mythology')return g;if(c.category==='Norse Mythology')return n;if(c.category==='Fantasy')return f;if(c.category==='Sci-Fi Fantasy')return s;return false;});var pr=document.getElementById('preventRepeats').checked;if(pr&&recent.length>0){filtered=filtered.filter(function(c){return recent.indexOf(c.name)===-1;});if(filtered.length===0){recent=[];return getFiltered();}}return filtered;}
-function generate(){var filtered=getFiltered();if(filtered.length===0){alert('Select at least one category!');return;}var ch=filtered[Math.floor(Math.random()*filtered.length)];var artSel=document.getElementById('artStyle').value;var selStyle;if(artSel==='random'){selStyle=styles[Math.floor(Math.random()*styles.length)];}else{var m={digital:'Digital Painting',watercolor:'Watercolor',ink:'Ink Drawing',pixel:'Pixel Art',sketch:'Pencil Sketch',oil:'Oil Painting',anime:'Anime Style',comic:'Comic Book Style',realistic:'Photorealistic',stylized:'Stylized/Cartoon'};selStyle=m[artSel];}var diff=document.getElementById('difficulty').value;var diffText=diff.charAt(0).toUpperCase()+diff.slice(1);var hasU=document.getElementById('includeUnderling').checked;var hasO=document.getElementById('includeOutfit').checked;var hasH=document.getElementById('includeHairColor').checked;var hasE=document.getElementById('includeEyeColor').checked;var hasP=document.getElementById('includePose').checked;var hasL=document.getElementById('includeLighting').checked;var hasB=document.getElementById('includeBackground').checked;var hasC=document.getElementById('includeColorPalette').checked;curr={character:ch.name,underling:ch.underling,category:ch.category,difficulty:diffText,style:selStyle,difficultyDesc:diffs[diff],hasUnderling:hasU,outfit:hasO?outfits[Math.floor(Math.random()*outfits.length)]:null,hairColor:hasH?hair[Math.floor(Math.random()*hair.length)]:null,eyeColor:hasE?eyes[Math.floor(Math.random()*eyes.length)]:null,pose:hasP?poses[Math.floor(Math.random()*poses.length)]:null,lighting:hasL?lighting[Math.floor(Math.random()*lighting.length)]:null,background:hasB?bgs[Math.floor(Math.random()*bgs.length)]:null,palette:hasC?palettes[Math.floor(Math.random()*palettes.length)]:null,timestamp:Date.now()};recent.push(ch.name);if(recent.length>10)recent.shift();hist.push(curr);save();display();}
-function display(){document.getElementById('categoryText').textContent=curr.category;document.getElementById('characterName').textContent=curr.character;document.getElementById('underlingName').textContent=curr.underling;document.getElementById('underlingSection').style.display=curr.hasUnderling?'block':'none';var pSec=document.getElementById('colorPaletteSection');if(curr.palette){pSec.style.display='block';var pH='';for(var i=0;i<curr.palette.colors.length;i++){pH+='<div class="color-swatch" style="background-color:'+curr.palette.colors[i]+'"></div>';}document.getElementById('paletteColors').innerHTML=pH;}else{pSec.style.display='none';}var sH='<div class="spec-box"><div class="spec-label">Difficulty</div><div class="spec-value">'+curr.difficulty+'</div></div>';sH+='<div class="spec-box"><div class="spec-label">Art Style</div><div class="spec-value">'+curr.style+'</div></div>';if(curr.outfit)sH+='<div class="spec-box"><div class="spec-label">Outfit</div><div class="spec-value">'+curr.outfit+'</div></div>';if(curr.hairColor)sH+='<div class="spec-box"><div class="spec-label">Hair</div><div class="spec-value">'+curr.hairColor+'</div></div>';if(curr.eyeColor)sH+='<div class="spec-box"><div class="spec-label">Eyes</div><div class="spec-value">'+curr.eyeColor+'</div></div>';if(curr.pose)sH+='<div class="spec-box"><div class="spec-label">Pose</div><div class="spec-value">'+curr.pose+'</div></div>';if(curr.lighting)sH+='<div class="spec-box"><div class="spec-label">Lighting</div><div class="spec-value">'+curr.lighting+'</div></div>';if(curr.background)sH+='<div class="spec-box"><div class="spec-label">Background</div><div class="spec-value">'+curr.background+'</div></div>';document.getElementById('specsContainer').innerHTML=sH;var pT='Create a <span class="highlight-character">'+curr.style+'</span> artwork featuring <span class="highlight-character">'+curr.character+'</span>';if(curr.hasUnderling)pT+=' alongside their <span class="highlight-underling">'+curr.underling+'</span>';pT+='. ';var det=[];if(curr.pose)det.push('in a <span class="highlight-character">'+curr.pose+'</span> pose');if(curr.outfit)det.push('<span class="highlight-character">wearing '+curr.outfit+' attire</span>');if(curr.hairColor)det.push('with <span class="highlight-character">'+curr.hairColor+' hair</span>');if(curr.eyeColor)det.push('<span class="highlight-character">'+curr.eyeColor+' eyes</span>');if(det.length>0)pT+='The character should be depicted '+det.join(', ')+'. ';if(curr.background)pT+='Set in <span class="highlight-character">'+curr.background+'</span>. ';if(curr.lighting)pT+='Use <span class="highlight-character">'+curr.lighting+'</span>. ';if(curr.palette)pT+='Palette: <span class="highlight-character">'+curr.palette.name+'</span>. ';pT+='<strong>'+curr.difficultyDesc+'.</strong> ';if(curr.hasUnderling)pT+='Consider their relationship!';else pT+='Show their personality!';document.getElementById('challengeText').innerHTML=pT;var isFav=favs.some(function(f){return f.character===curr.character&&f.timestamp===curr.timestamp;});var fb=document.getElementById('favoriteBtn');if(isFav){fb.classList.add('favorited');fb.innerHTML='⭐ Favorited';}else{fb.classList.remove('favorited');fb.innerHTML='⭐ Favorite';}document.getElementById('initialState').style.display='none';document.getElementById('challengeContent').classList.add('active');}
-function share(){if(!curr)return;var t='🎨 Daily Art Challenge 🎨\n\n📜 Character: '+curr.character+'\n';if(curr.hasUnderling)t+='👥 Companion: '+curr.underling+'\n';t+='📂 Category: '+curr.category+'\n⚡ Difficulty: '+curr.difficulty+'\n🖌️ Style: '+curr.style+'\n';if(curr.outfit)t+='👔 Outfit: '+curr.outfit+'\n';if(curr.hairColor)t+='💇 Hair: '+curr.hairColor+'\n';if(curr.eyeColor)t+='👁️ Eyes: '+curr.eyeColor+'\n';if(curr.pose)t+='🤸 Pose: '+curr.pose+'\n';if(curr.lighting)t+='💡 Lighting: '+curr.lighting+'\n';if(curr.background)t+='🏞️ Background: '+curr.background+'\n';if(curr.palette)t+='🎨 Palette: '+curr.palette.name+'\n';t+='\n✨ '+curr.difficultyDesc;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){toast('Copied!');}).catch(function(){fallback(t);});}else{fallback(t);}}
-function fallback(t){var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.left='-999999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Copied!');}catch(e){alert('Challenge:\n\n'+t);}document.body.removeChild(ta);}
-function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
-function copyLink(){if(!curr)return;var d=btoa(JSON.stringify(curr));var u=window.location.href.split('?')[0]+'?c='+d;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(u).then(function(){toast('Link copied!');}).catch(function(){alert('Link:\n\n'+u);});}else{alert('Link:\n\n'+u);}}
-function download(){if(!curr)return;var cv=document.getElementById('canvas');var ctx=cv.getContext('2d');var ex=0;if(curr.outfit)ex++;if(curr.hairColor)ex++;if(curr.eyeColor)ex++;if(curr.pose)ex++;if(curr.lighting)ex++;if(curr.background)ex++;var rows=Math.ceil((2+ex)/2);var sH=rows*140;var pH=curr.palette?120:0;var uH=curr.hasUnderling?220:0;cv.width=1200;cv.height=800+uH+sH+pH;var g=ctx.createLinearGradient(0,0,cv.width,cv.height);g.addColorStop(0,'#581c87');g.addColorStop(0.5,'#3730a3');g.addColorStop(1,'#1e3a8a');ctx.fillStyle=g;ctx.fillRect(0,0,cv.width,cv.height);ctx.fillStyle='rgba(255,255,255,0.1)';ctx.fillRect(50,50,cv.width-100,cv.height-100);ctx.fillStyle='#fff';ctx.font='bold 60px sans-serif';ctx.textAlign='center';ctx.fillText('Daily Art Challenge',cv.width/2,150);ctx.fillStyle='rgba(168,85,247,0.4)';var cw=ctx.measureText(curr.category).width+100;ctx.fillRect((cv.width-cw)/2,220,cw,60);ctx.fillStyle='#e9d5ff';ctx.font='24px sans-serif';ctx.fillText(curr.category,cv.width/2,258);ctx.fillStyle='rgba(251,191,36,0.3)';ctx.fillRect(100,320,cv.width-200,180);ctx.strokeStyle='rgba(251,191,36,0.6)';ctx.lineWidth=3;ctx.strokeRect(100,320,cv.width-200,180);ctx.fillStyle='#d1d5db';ctx.font='20px sans-serif';ctx.textAlign='left';ctx.fillText('MAIN CHARACTER',120,360);ctx.fillStyle='#fff';ctx.font='bold 50px sans-serif';ctx.textAlign='center';ctx.fillText(curr.character,cv.width/2,430);var y=540;if(curr.hasUnderling){ctx.fillStyle='rgba(96,165,250,0.3)';ctx.fillRect(100,y,cv.width-200,180);ctx.strokeStyle='rgba(96,165,250,0.6)';ctx.lineWidth=3;ctx.strokeRect(100,y,cv.width-200,180);ctx.fillStyle='#d1d5db';ctx.font='20px sans-serif';ctx.textAlign='left';ctx.fillText('UNDERLING',120,y+40);ctx.fillStyle='#fff';ctx.font='bold 45px sans-serif';ctx.textAlign='center';ctx.fillText(curr.underling,cv.width/2,y+110);y+=220;}if(curr.palette){ctx.fillStyle='rgba(139,92,246,0.3)';ctx.fillRect(100,y,cv.width-200,100);ctx.strokeStyle='rgba(139,92,246,0.5)';ctx.lineWidth=2;ctx.strokeRect(100,y,cv.width-200,100);ctx.fillStyle='#c4b5fd';ctx.font='18px sans-serif';ctx.textAlign='left';ctx.fillText('COLOR PALETTE: '+curr.palette.name,120,y+35);var sw=180,sp=20;var tw=(sw*curr.palette.colors.length)+(sp*(curr.palette.colors.length-1));var sx=(cv.width-tw)/2;for(var i=0;i<curr.palette.colors.length;i++){ctx.fillStyle=curr.palette.colors[i];ctx.fillRect(sx+(i*(sw+sp)),y+50,sw,35);ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=2;ctx.strokeRect(sx+(i*(sw+sp)),y+50,sw,35);}y+=120;}var sd=[{label:'DIFFICULTY',value:curr.difficulty},{label:'ART STYLE',value:curr.style}];if(curr.outfit)sd.push({label:'OUTFIT',value:curr.outfit});if(curr.hairColor)sd.push({label:'HAIR',value:curr.hairColor});if(curr.eyeColor)sd.push({label:'EYES',value:curr.eyeColor});if(curr.pose)sd.push({label:'POSE',value:curr.pose});if(curr.lighting)sd.push({label:'LIGHTING',value:curr.lighting});if(curr.background)sd.push({label:'BACKGROUND',value:curr.background});for(var i=0;i<sd.length;i++){var c=i%2;var r=Math.floor(i/2);var x=100+c*520;var sy=y+r*140;ctx.fillStyle='rgba(139,92,246,0.3)';ctx.fillRect(x,sy,480,120);ctx.strokeStyle='rgba(139,92,246,0.5)';ctx.lineWidth=2;ctx.strokeRect(x,sy,480,120);ctx.fillStyle='#c4b5fd';ctx.font='18px sans-serif';ctx.textAlign='left';ctx.fillText(sd[i].label,x+20,sy+35);ctx.fillStyle='#fff';ctx.font='bold 28px sans-serif';ctx.fillText(sd[i].value,x+20,sy+75);}try{var url=cv.toDataURL('image/png');var a=document.createElement('a');a.href=url;a.download='art-challenge-'+curr.character.toLowerCase().replace(/\s+/g,'-')+'.png';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('Downloaded!');}catch(e){alert('Download failed');}}
-function loadURL(){var p=new URLSearchParams(window.location.search);if(p.has('c')){try{curr=JSON.parse(atob(p.get('c')));display();}catch(e){}}}
-window.addEventListener('DOMContentLoaded',function(){load();loadURL();});
+
+function toggleFav(){
+    if(!curr)return;
+    var isFav=favs.some(function(f){return f.character===curr.character&&f.timestamp===curr.timestamp;});
+    if(isFav){
+        favs=favs.filter(function(f){return!(f.character===curr.character&&f.timestamp===curr.timestamp);});
+        document.getElementById('favoriteBtn').classList.remove('favorited');
+        toast('Removed from favorites');
+    }else{
+        favs.push(curr);
+        document.getElementById('favoriteBtn').classList.add('favorited');
+        toast('Added to favorites!');
+    }
+    save();
+}
+
+function selectAllCats(){
+    var checks=document.querySelectorAll('.cat-check');
+    checks.forEach(function(c){c.checked=true;});
+}
+
+function deselectAllCats(){
+    var checks=document.querySelectorAll('.cat-check');
+    checks.forEach(function(c){c.checked=false;});
+}
+
+function randomizeAll(){
+    var checks=document.querySelectorAll('.cat-check');
+    checks.forEach(function(c){c.checked=Math.random()>0.5;});
+    var anyChecked=Array.from(checks).some(function(c){return c.checked;});
+    if(!anyChecked)checks[0].checked=true;
+    
+    document.getElementById('includeUnderling').checked=Math.random()>0.3;
+    document.getElementById('includeSecondary').checked=Math.random()>0.5;
+    document.getElementById('includeOutfit').checked=Math.random()>0.5;
+    document.getElementById('includeHairColor').checked=Math.random()>0.5;
+    document.getElementById('includeEyeColor').checked=Math.random()>0.5;
+    document.getElementById('includeExpression').checked=Math.random()>0.5;
+    document.getElementById('includeWeapon').checked=Math.random()>0.5;
+    document.getElementById('includeAge').checked=Math.random()>0.5;
+    document.getElementById('includePose').checked=Math.random()>0.5;
+    document.getElementById('includeLighting').checked=Math.random()>0.5;
+    document.getElementById('includeBackground').checked=Math.random()>0.5;
+    document.getElementById('includeColorPalette').checked=Math.random()>0.5;
+    document.getElementById('includeComposition').checked=Math.random()>0.5;
+    
+    var ds=['easy','medium','hard'];
+    document.getElementById('difficulty').value=ds[Math.floor(Math.random()*ds.length)];
+    var ss=['random','digital','watercolor','ink','pixel','sketch','oil','anime','comic','realistic','stylized'];
+    document.getElementById('artStyle').value=ss[Math.floor(Math.random()*ss.length)];
+    toast('Randomized!');
+}
+
+function getFiltered(){
+    var g=document.getElementById('greek').checked;
+    var n=document.getElementById('norse').checked;
+    var e=document.getElementById('egyptian').checked;
+    var c=document.getElementById('celtic').checked;
+    var j=document.getElementById('japanese').checked;
+    var h=document.getElementById('hindu').checked;
+    var az=document.getElementById('aztec').checked;
+    var sl=document.getElementById('slavic').checked;
+    var f=document.getElementById('fantasy').checked;
+    var fs=document.getElementById('fantasySea').checked;
+    var fu=document.getElementById('fantasyUrban').checked;
+    var fw=document.getElementById('fantasyWestern').checked;
+    var fst=document.getElementById('fantasySteam').checked;
+    var fh=document.getElementById('fantasyHorror').checked;
+    var s=document.getElementById('scifi').checked;
+    
+    var filtered=simpleChars.filter(function(ch){
+        if(ch.cat==='Greek Mythology')return g;
+        if(ch.cat==='Norse Mythology')return n;
+        if(ch.cat==='Egyptian Mythology')return e;
+        if(ch.cat==='Celtic Mythology')return c;
+        if(ch.cat==='Japanese Mythology')return j;
+        if(ch.cat==='Hindu Mythology')return h;
+        if(ch.cat==='Aztec Mythology'||ch.cat==='Mayan Mythology')return az;
+        if(ch.cat==='Slavic Mythology')return sl;
+        if(ch.cat==='Fantasy')return f;
+        if(ch.cat==='Fantasy - Sea')return fs;
+        if(ch.cat==='Fantasy - Urban')return fu;
+        if(ch.cat==='Fantasy - Western')return fw;
+        if(ch.cat==='Fantasy - Steampunk')return fst;
+        if(ch.cat==='Fantasy - Horror')return fh;
+        if(ch.cat==='Sci-Fi Fantasy')return s;
+        return false;
+    });
+    
+    var pr=document.getElementById('preventRepeats').checked;
+    if(pr&&recent.length>0){
+        filtered=filtered.filter(function(ch){return recent.indexOf(ch.name)===-1;});
+        if(filtered.length===0){recent=[];return getFiltered();}
+    }
+    return filtered;
+}
+
+function testGenerate(){
+    console.log('Generate clicked!');
+    var filtered=getFiltered();
+    console.log('Filtered chars:',filtered.length);
+    
+    if(filtered.length===0){
+        alert('Select at least one category!');
+        return;
+    }
+    
+    var ch=filtered[Math.floor(Math.random()*filtered.length)];
+    console.log('Selected char:',ch.name);
+    
+    var artSel=document.getElementById('artStyle').value;
+    var selStyle;
+    if(artSel==='random'){
+        selStyle=styles[Math.floor(Math.random()*styles.length)];
+    }else{
+        var m={digital:'Digital Painting',watercolor:'Watercolor',ink:'Ink Drawing',pixel:'Pixel Art',sketch:'Pencil Sketch',oil:'Oil Painting',anime:'Anime Style',comic:'Comic Book Style',realistic:'Photorealistic',stylized:'Stylized/Cartoon'};
+        selStyle=m[artSel];
+    }
+    
+    var diff=document.getElementById('difficulty').value;
+    var diffText=diff.charAt(0).toUpperCase()+diff.slice(1);
+    
+    var hasU=document.getElementById('includeUnderling').checked;
+    var hasSec=document.getElementById('includeSecondary').checked;
+    
+    var underlings=[];
+    if(hasU)underlings.push(ch.main);
+    if(hasSec&&ch.sec&&ch.sec.length>0){
+        var numSec=Math.random()<0.5?1:(Math.random()<0.7?2:0);
+        for(var i=0;i<numSec&&i<ch.sec.length;i++){
+            underlings.push(ch.sec[i]);
+        }
+    }
+    
+    var hasO=document.getElementById('includeOutfit').checked;
+    var hasH=document.getElementById('includeHairColor').checked;
+    var hasE=document.getElementById('includeEyeColor').checked;
+    var hasExp=document.getElementById('includeExpression').checked;
+    var hasW=document.getElementById('includeWeapon').checked;
+    var hasA=document.getElementById('includeAge').checked;
+    var hasP=document.getElementById('includePose').checked;
+    var hasL=document.getElementById('includeLighting').checked;
+    var hasB=document.getElementById('includeBackground').checked;
+    var hasC=document.getElementById('includeColorPalette').checked;
+    var hasCo=document.getElementById('includeComposition').checked;
+    
+    curr={
+        character:ch.name,
+        underlings:underlings,
+        category:ch.cat,
+        difficulty:diffText,
+        style:selStyle,
+        difficultyDesc:diffs[diff],
+        outfit:hasO?outfits[Math.floor(Math.random()*outfits.length)]:null,
+        hairColor:hasH?hair[Math.floor(Math.random()*hair.length)]:null,
+        eyeColor:hasE?eyes[Math.floor(Math.random()*eyes.length)]:null,
+        expression:hasExp?expressions[Math.floor(Math.random()*expressions.length)]:null,
+        weapon:hasW?weapons[Math.floor(Math.random()*weapons.length)]:null,
+        age:hasA?ages[Math.floor(Math.random()*ages.length)]:null,
+        pose:hasP?poses[Math.floor(Math.random()*poses.length)]:null,
+        lighting:hasL?lighting[Math.floor(Math.random()*lighting.length)]:null,
+        background:hasB?bgs[Math.floor(Math.random()*bgs.length)]:null,
+        palette:hasC?palettes[Math.floor(Math.random()*palettes.length)]:null,
+        composition:hasCo?compositions[Math.floor(Math.random()*compositions.length)]:null,
+        timestamp:Date.now(),
+        code:generateCode()
+    };
+    
+    recent.push(ch.name);
+    if(recent.length>10)recent.shift();
+    hist.push(curr);
+    updateStreak();
+    save();
+    display();
+}
+
+function generateCode(){
+    var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var code='';
+    for(var i=0;i<4;i++){
+        code+=chars.charAt(Math.floor(Math.random()*chars.length));
+    }
+    return code;
+}
+
+function display(){
+    console.log('Displaying challenge...');
+    document.getElementById('categoryText').textContent=curr.category;
+    document.getElementById('characterName').textContent=curr.character;
+    
+    var underlingSection=document.getElementById('underlingSection');
+    if(curr.underlings&&curr.underlings.length>0){
+        underlingSection.style.display='block';
+        document.getElementById('underlingName').textContent=curr.underlings.join(', ');
+    }else{
+        underlingSection.style.display='none';
+    }
+    
+    var pSec=document.getElementById('colorPaletteSection');
+    if(curr.palette){
+        pSec.style.display='block';
+        var pH='';
+        for(var i=0;i<curr.palette.colors.length;i++){
+            pH+='<div class="color-swatch" style="background-color:'+curr.palette.colors[i]+'"></div>';
+        }
+        document.getElementById('paletteColors').innerHTML=pH;
+    }else{
+        pSec.style.display='none';
+    }
+    
+    var sH='<div class="spec-box"><div class="spec-label">Difficulty</div><div class="spec-value">'+curr.difficulty+'</div></div>';
+    sH+='<div class="spec-box"><div class="spec-label">Art Style</div><div class="spec-value">'+curr.style+'</div></div>';
+    
+    if(curr.outfit)sH+='<div class="spec-box"><div class="spec-label">Outfit</div><div class="spec-value">'+curr.outfit+'</div></div>';
+    if(curr.hairColor)sH+='<div class="spec-box"><div class="spec-label">Hair</div><div class="spec-value">'+curr.hairColor+'</div></div>';
+    if(curr.eyeColor)sH+='<div class="spec-box"><div class="spec-label">Eyes</div><div class="spec-value">'+curr.eyeColor+'</div></div>';
+    if(curr.expression)sH+='<div class="spec-box"><div class="spec-label">Expression</div><div class="spec-value">'+curr.expression+'</div></div>';
+    if(curr.weapon)sH+='<div class="spec-box"><div class="spec-label">Weapon</div><div class="spec-value">'+curr.weapon+'</div></div>';
+    if(curr.age)sH+='<div class="spec-box"><div class="spec-label">Age</div><div class="spec-value">'+curr.age+'</div></div>';
+    if(curr.pose)sH+='<div class="spec-box"><div class="spec-label">Pose</div><div class="spec-value">'+curr.pose+'</div></div>';
+    if(curr.lighting)sH+='<div class="spec-box"><div class="spec-label">Lighting</div><div class="spec-value">'+curr.lighting+'</div></div>';
+    if(curr.background)sH+='<div class="spec-box"><div class="spec-label">Background</div><div class="spec-value">'+curr.background+'</div></div>';
+    if(curr.composition)sH+='<div class="spec-box"><div class="spec-label">Composition</div><div class="spec-value">'+curr.composition+'</div></div>';
+    if(curr.code)sH+='<div class="spec-box" style="grid-column: span 2;"><div class="spec-label">Challenge Code</div><div class="spec-value" style="font-size: 2rem; letter-spacing: 0.2em;">'+curr.code+'</div></div>';
+    
+    document.getElementById('specsContainer').innerHTML=sH;
+    
+    var pT='Create a <span class="highlight-character">'+curr.style+'</span> artwork featuring <span class="highlight-character">'+curr.character+'</span>';
+    
+    if(curr.underlings&&curr.underlings.length>0){
+        pT+=' alongside ';
+        if(curr.underlings.length===1){
+            pT+='their <span class="highlight-underling">'+curr.underlings[0]+'</span>';
+        }else if(curr.underlings.length===2){
+            pT+='their <span class="highlight-underling">'+curr.underlings[0]+'</span> and <span class="highlight-underling">'+curr.underlings[1]+'</span>';
+        }else{
+            for(var i=0;i<curr.underlings.length;i++){
+                if(i===curr.underlings.length-1){
+                    pT+='and <span class="highlight-underling">'+curr.underlings[i]+'</span>';
+                }else{
+                    pT+='<span class="highlight-underling">'+curr.underlings[i]+'</span>, ';
+                }
+            }
+        }
+    }
+    pT+='. ';
+    
+    var det=[];
+    if(curr.age)det.push('<span class="highlight-character">'+curr.age+'</span>');
+    if(curr.expression)det.push('with a <span class="highlight-character">'+curr.expression+'</span> expression');
+    if(curr.pose)det.push('in a <span class="highlight-character">'+curr.pose+'</span> pose');
+    if(curr.outfit)det.push('<span class="highlight-character">wearing '+curr.outfit+' attire</span>');
+    if(curr.hairColor)det.push('with <span class="highlight-character">'+curr.hairColor+' hair</span>');
+    if(curr.eyeColor)det.push('<span class="highlight-character">'+curr.eyeColor+' eyes</span>');
+    if(curr.weapon)det.push('holding <span class="highlight-character">'+curr.weapon+'</span>');
+    
+    if(det.length>0)pT+='The character should be depicted '+det.join(', ')+'. ';
+    if(curr.background)pT+='Set in <span class="highlight-character">'+curr.background+'</span>. ';
+    if(curr.lighting)pT+='Use <span class="highlight-character">'+curr.lighting+'</span>. ';
+    if(curr.composition)pT+='Composition: <span class="highlight-character">'+curr.composition+'</span>. ';
+    if(curr.palette)pT+='Palette: <span class="highlight-character">'+curr.palette.name+'</span>. ';
+    pT+='<strong>'+curr.difficultyDesc+'.</strong> ';
+    
+    if(curr.underlings&&curr.underlings.length>0){
+        pT+='Consider their relationship!';
+    }else{
+        pT+='Show their personality!';
+    }
+    
+    document.getElementById('challengeText').innerHTML=pT;
+    
+    var isFav=favs.some(function(f){return f.character===curr.character&&f.timestamp===curr.timestamp;});
+    var fb=document.getElementById('favoriteBtn');
+    if(isFav){
+        fb.classList.add('favorited');
+        fb.innerHTML='⭐ Favorited';
+    }else{
+        fb.classList.remove('favorited');
+        fb.innerHTML='⭐ Favorite';
+    }
+    
+    document.getElementById('initialState').style.display='none';
+    document.getElementById('challengeContent').classList.add('active');
+}
+
+function share(){
+    if(!curr)return;
+    var t='🎨 Daily Art Challenge 🎨\n\n📜 Character: '+curr.character+'\n';
+    if(curr.underlings&&curr.underlings.length>0)t+='👥 Companions: '+curr.underlings.join(', ')+'\n';
+    t+='📂 Category: '+curr.category+'\n⚡ Difficulty: '+curr.difficulty+'\n🖌️ Style: '+curr.style+'\n';
+    if(curr.outfit)t+='👔 Outfit: '+curr.outfit+'\n';
+    if(curr.hairColor)t+='💇 Hair: '+curr.hairColor+'\n';
+    if(curr.eyeColor)t+='👁️ Eyes: '+curr.eyeColor+'\n';
+    if(curr.expression)t+='😊 Expression: '+curr.expression+'\n';
+    if(curr.weapon)t+='⚔️ Weapon: '+curr.weapon+'\n';
+    if(curr.age)t+='👤 Age: '+curr.age+'\n';
+    if(curr.pose)t+='🤸 Pose: '+curr.pose+'\n';
+    if(curr.lighting)t+='💡 Lighting: '+curr.lighting+'\n';
+    if(curr.background)t+='🏞️ Background: '+curr.background+'\n';
+    if(curr.composition)t+='📐 Composition: '+curr.composition+'\n';
+    if(curr.palette)t+='🎨 Palette: '+curr.palette.name+'\n';
+    if(curr.code)t+='🔢 Code: '+curr.code+'\n';
+    t+='\n✨ '+curr.difficultyDesc;
+    
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(t).then(function(){toast('Copied!');}).catch(function(){alert(t);});
+    }else{
+        alert(t);
+    }
+}
+
+function toast(m){
+    var t=document.getElementById('toast');
+    t.textContent=m;
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show');},3000);
+}
+
+window.addEventListener('DOMContentLoaded',function(){
+    console.log('Page loaded');
+    load();
+});
     </script>
 </body>
 </html>
